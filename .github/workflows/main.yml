@@ -23,12 +23,8 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Create lib directory and move main.dart
-        run: |
-          mkdir -p lib
-          if [ -f main.dart ]; then mv main.dart lib/; fi
-          flutter create . --platforms=android --keep-app
-          flutter pub get
+      - name: Get Dependencies
+        run: flutter pub get
 
       - name: Build APK
         run: flutter build apk --debug
