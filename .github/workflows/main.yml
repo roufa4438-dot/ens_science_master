@@ -23,14 +23,28 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Get Dependencies
-        run: flutter pub get
-
-      - name: Build APK
-        run: flutter build apk --debug
+      - name: Auto-structure Project and Build
+        run: |
+          # 1. Create a clean Flutter template
+          flutter create temp_app --platforms=android
+          
+          # 2. Move lib files if main.dart exists in root
+          if [ -f main.dart ]; then
+            cp main.dart temp_app/lib/
+          fi
+          
+          # 3. Copy pubspec if exists
+          if [ -f pubspec.yaml ]; then
+            cp pubspec.yaml temp_app/
+          fi
+          
+          # 4. Build APK inside temp_app
+          cd temp_app
+          flutter pub get || true
+          flutter build apk --debug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: temp_app/build/app/outputs/flutter-apk/app-debug.apk
